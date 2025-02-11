@@ -1,17 +1,18 @@
-import React, { useState } from "react";
-import FileUpload from "../components/FileUpload";
-import PredictionTable from "../components/PredictionTable";
+const handleUpload = async () => {
+  if (!file) return;
+  const formData = new FormData();
+  formData.append("file", file);
 
-function AnomalyDetector() {
-  const [predictions, setPredictions] = useState([]);
+  try {
+    const response = await axios.post(
+      "https://anomaly-detection-u6p2.onrender.com/predict", // ✅ Use Render backend URL
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
 
-  return (
-    <div className="p-6 bg-white shadow-lg rounded-xl">
-      <h2 className="text-2xl font-bold mb-4">Anomaly Detector</h2>
-      <FileUpload setPredictions={setPredictions} />
-      <PredictionTable predictions={predictions} />
-    </div>
-  );
-}
-
-export default AnomalyDetector;
+    setPredictions(response.data.predictions);
+    setDownloadLink("https://anomaly-detection-u6p2.onrender.com/download"); // ✅ Update download URL
+  } catch (error) {
+    console.error("Error uploading file:", error);
+  }
+};
